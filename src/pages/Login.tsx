@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { signIn } from "../utils/auth";
+import { Field, Input, Box, Button, Heading, Text } from "@chakra-ui/react";
+import { FaArrowLeft } from "react-icons/fa";
+
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+
+// import { ReactFormState } from "react-dom/client";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -11,7 +16,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSignIn = async () => {
+  const handleSignIn = async (event: React.FormEvent) => {
+    event.preventDefault();
     setLoading(true);
     setError(null);
 
@@ -24,42 +30,126 @@ export default function Login() {
       setError(error.message);
     } else {
       await refreshUser();
-      navigate("/");
+      navigate("/dashboard");
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="p-8 border shadow-md rounded-lg max-w-sm w-full">
-        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
-
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-2 border rounded mb-3"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-2 border rounded mb-3"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <button
-          className="w-full bg-blue-500 text-white p-2 rounded"
-          onClick={handleSignIn}
-          disabled={loading}
+    <>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minH="100vh"
+        px={4}
+        bg="#80CBC4"
+      >
+        <Button
+          position="absolute"
+          top="2.5%"
+          left="2.5%"
+          backgroundColor="#80cbc4"
+          onClick={() => navigate("/")}
+          _hover={{
+            scale: "1.5",
+            transform: "scale(1.01)",
+            transition: "all 0.2s ease-in-out",
+          }}
         >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-      </div>
-    </div>
+          <FaArrowLeft />
+        </Button>
+        <Box
+          p={12}
+          borderWidth="1px"
+          shadow="lg"
+          borderRadius="xl"
+          maxW="md"
+          w="full"
+          bg="white"
+        >
+          <Heading
+            style={{
+              fontSize: "1.875rem",
+              fontWeight: "bold",
+              textAlign: "center",
+              marginBottom: "2rem",
+            }}
+          >
+            Login
+          </Heading>
+
+          {error && (
+            <Box color="red.500" fontSize="sm" mb={4}>
+              {error}
+            </Box>
+          )}
+
+          <form onSubmit={handleSignIn} className="w-full">
+            <Field.Root>
+              <Field.Label>
+                <Field.RequiredIndicator />
+              </Field.Label>
+              <Input
+                placeholder="Email"
+                variant="subtle"
+                type="email"
+                shadow="md"
+                bg="white"
+                value={email}
+                _hover={{ borderColor: "#B4EBE6", borderWidth: "1px" }}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <Input
+                placeholder="Password"
+                variant="subtle"
+                type="password"
+                shadow="md"
+                value={password}
+                bg="white"
+                _hover={{ borderColor: "#B4EBE6", borderWidth: "1px" }}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <Field.HelperText />
+              <Field.ErrorText />
+            </Field.Root>
+            <Button
+              type="submit"
+              colorScheme="blue"
+              width="full"
+              size="lg"
+              color="black"
+              // borderWidth="1px"
+              // borderColor="#B4EBE6"
+              shadow="md" // Adds shadow
+              disabled={loading}
+              bg="white"
+              justifyContent="center"
+              alignItems="center"
+              _hover={{ bg: "#B4EBE6" }}
+              mt={2}
+            >
+              {" "}
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+
+            <Text fontFamily={"poppins"} textAlign={"center"} marginTop="10px">
+              Don't have an account?{" "}
+              <p onClick={() => navigate("/create-profile")}>
+                <Text
+                  as="span"
+                  cursor="pointer"
+                  textDecoration="underline"
+                  color="blue.500"
+                >
+                  Sign Up
+                </Text>
+              </p>
+            </Text>
+          </form>
+        </Box>
+      </Box>
+    </>
   );
 }

@@ -2,6 +2,15 @@ import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { Reward } from "../types/database";
 import { ProtectedRoute } from "../components/ProtectedRoute";
+import {
+  Box,
+  Input,
+  Heading,
+  Button,
+  Text,
+  VStack,
+  Spinner,
+} from "@chakra-ui/react";
 
 const RewardView: React.FC = () => {
   const [rewards, setRewards] = useState<Reward[]>([]);
@@ -134,117 +143,152 @@ const RewardView: React.FC = () => {
 
   return (
     <ProtectedRoute>
-      <div className="p-6">
-        <h1 className="text-2xl font-bold">Reward View</h1>
+      <Box bg="#B2DFDB" p={4} rounded="md" mb={4} shadow="lg">
+        <Heading
+          mt={2}
+          bg="purple.500"
+          color="white"
+          p={4}
+          borderRadius="xl"
+          shadow="md"
+          fontSize="1.875rem"
+          fontWeight="bold"
+          textAlign="center"
+          mb={8}
+        >
+          Rewards
+        </Heading>
 
-        {/* ------------------------ Reward Creation Form ---------------------*/}
-        <div className="bg-gray-100 p-4 rounded-md mb-4">
-          <h2 className="text-xl font-semibold">Create Reward</h2>
-
-          <input
-            type="text"
-            placeholder="Reward Name"
-            className="w-full p-2 border rounded mb-2"
-            value={rewardName}
-            onChange={(e) => setRewardName(e.target.value)}
-            required
-          />
-
-          <input
-            type="number"
-            placeholder="Cost in Coins"
-            className="w-full p-2 border rounded mb-2"
-            value={rewardCost}
-            min="1"
-            onChange={(e) => setRewardCost(parseInt(e.target.value, 10))}
-            required
-          />
-
-          <button
-            className="bg-green-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-600 transition"
-            onClick={createReward}
-            disabled={loading}
-          >
-            {loading ? "Adding..." : "Create Reward"}
-          </button>
-        </div>
-
-        {/* --------------------- Edit Reward Form -----------------------------------*/}
-        {editingReward && (
-          <div className="bg-gray-200 p-4 rounded-md mb-4">
-            <h2 className="text-xl font-semibold">Edit Reward</h2>
-
-            <input
-              type="text"
+        <VStack gap={4} align="stretch">
+          {/* ------------------------ Reward Creation Form ---------------------*/}
+          <Box bg="gray.100" p={4} rounded="md" mb={4}>
+            <Text fontSize="xl" fontWeight="semibold" mb={4}>
+              Create Reward
+            </Text>
+            <Input
+              value={rewardName}
+              onChange={(e) => setRewardName(e.target.value)}
               placeholder="Reward Name"
-              className="w-full p-2 border rounded mb-2"
-              value={editedName}
-              onChange={(e) => setEditedName(e.target.value)}
-              required
+              mb={4}
+              variant="outline"
             />
 
-            <input
+            <Input
               type="number"
-              placeholder="Cost in Coins"
-              className="w-full p-2 border rounded mb-2"
-              value={editedCost}
-              min="1"
-              onChange={(e) => setEditedCost(parseInt(e.target.value, 10))}
-              required
+              value={rewardCost}
+              onChange={(e) => setRewardCost(Number(e.target.value))}
+              min={1}
+              placeholder="Reward Cost"
+              mb={4}
+              variant="outline"
             />
 
-            <button
-              className="bg-green-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-600 transition"
-              onClick={editReward}
+            <Button
+              onClick={createReward}
+              colorScheme="green"
+              width="full"
               disabled={loading}
             >
-              {loading ? "Updating..." : "Update Reward"}
-            </button>
+              {loading ? <Spinner size="sm" color="white" /> : "Create Reward"}
+            </Button>
+          </Box>
 
-            <button
-              className="bg-gray-500 text-white px-4 py-2 rounded ml-2 hover:bg-gray-600 transition"
-              onClick={() => setEditingReward(null)}
-            >
-              Cancel
-            </button>
-          </div>
-        )}
+          {/* --------------------- Edit Reward Form -----------------------------------*/}
+          {editingReward && (
+            <Box bg="gray.100" p={4} rounded="md" mb={4}>
+              <Text fontSize="xl" fontWeight="semibold" mb={4}>
+                Edit Reward
+              </Text>
 
-        {/* --------------------- Reward List ---------------------------------*/}
-        {rewards.length > 0 ? (
-          <div>
-            <h2 className="text-xl font-semibold">Available Rewards</h2>
-            {rewards.map((reward) => (
-              <div key={reward.id} className="p-3 bg-gray-100 rounded-md mb-2">
-                <p>
-                  <strong>{reward.name}</strong>
-                </p>
-                <p>Cost: {reward.cost} coins</p>
+              <Input
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                placeholder="Reward Name"
+                mb={4}
+                variant="outline"
+              />
 
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-600 transition"
-                  onClick={() => {
-                    setEditingReward(reward);
-                    setEditedName(reward.name);
-                    setEditedCost(reward.cost);
-                  }}
+              <Input
+                type="number"
+                value={editedCost}
+                onChange={(e) => setEditedCost(Number(e.target.value))}
+                min={1}
+                placeholder="Reward Cost"
+                mb={4}
+                variant="outline"
+              />
+
+              <Button
+                onClick={editReward}
+                colorScheme="green"
+                width="full"
+                disabled={loading}
+              >
+                {loading ? (
+                  <Spinner size="sm" color="white" />
+                ) : (
+                  "Update Reward"
+                )}
+              </Button>
+
+              <Button
+                onClick={() => setEditingReward(null)}
+                variant="outline"
+                colorScheme="gray"
+                width="full"
+                mt={2}
+              >
+                Cancel
+              </Button>
+            </Box>
+          )}
+
+          {/* --------------------- Reward List ---------------------------------*/}
+          {rewards.length > 0 ? (
+            <Box>
+              <Heading size="md" mb={4}>
+                Available Rewards
+              </Heading>
+              {rewards.map((reward) => (
+                <Box
+                  key={reward.id}
+                  bg="gray.100"
+                  p={4}
+                  rounded="md"
+                  mb={4}
+                  shadow="sm"
                 >
-                  Edit
-                </button>
+                  <p>
+                    <strong>{reward.name}</strong>
+                  </p>
+                  <p>Cost: {reward.cost} coins</p>
 
-                <button
-                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-                  onClick={() => deleteReward(reward.id)}
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p>No rewards available.</p>
-        )}
-      </div>
+                  <Button
+                    onClick={() => {
+                      setEditingReward(reward);
+                      setEditedName(reward.name);
+                      setEditedCost(reward.cost);
+                    }}
+                    colorScheme="blue"
+                    mr={2}
+                  >
+                    Edit
+                  </Button>
+
+                  <Button
+                    onClick={() => deleteReward(reward.id)}
+                    colorScheme="red"
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            <Text>No rewards available.</Text>
+          )}
+        </VStack>
+      </Box>
     </ProtectedRoute>
   );
 };
